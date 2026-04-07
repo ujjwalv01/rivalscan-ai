@@ -41,7 +41,7 @@ UPSTASH_REDIS_REST_TOKEN=...               # Optional
 
 | Variable | Required | Description |
 |---|---|---|
-| `GROQ_API_KEY` | ✅ Yes | Claude API key from [console.groq.com](https://console.groq.com/keys) |
+| `GROQ_API_KEY` | ✅ Yes | Groq API key from [console.groq.com](https://console.groq.com/keys) |
 | `FIRECRAWL_API_KEY` | ✅ Yes | Firecrawl key from [firecrawl.dev](https://firecrawl.dev) |
 | `UPSTASH_REDIS_REST_URL` | Optional | Upstash Redis REST URL for caching |
 | `UPSTASH_REDIS_REST_TOKEN` | Optional | Upstash Redis REST token |
