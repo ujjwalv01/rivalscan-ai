@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getCached, setCache } from '@/lib/redis';
 import { ResearchReport, StreamMessage } from '@/lib/types';
-import { groq, SYSTEM_PROMPT, buildUserPrompt, chunkText } from '@/lib/groq';
+import { groq, buildUserPrompt, chunkText } from '@/lib/groq';
 
 async function scrapeCompany(company: string): Promise<{ text: string; error?: string }> {
   const apiKey = process.env.FIRECRAWL_API_KEY;

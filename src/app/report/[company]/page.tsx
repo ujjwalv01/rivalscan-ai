@@ -189,6 +189,7 @@ export default function ReportPage() {
                 className="relative p-0.5 rounded-2xl bg-gradient-to-tr from-indigo-500 to-violet-500"
               >
                 <div className="bg-white dark:bg-neutral-900 p-1.5 rounded-[14px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={logoUrl}
                     alt={`${company} logo`}
