@@ -1,0 +1,153 @@
+import { NextRequest } from 'next/server';
+import { getCached, setCache } from '@/lib/redis';
+import { ResearchReport, StreamMessage } from '@/lib/types';
+import { groq, SYSTEM_PROMPT, buildUserPrompt, chunkText } from '@/lib/groq';
+
+async function scrapeCompany(company: string): Promise<{ text: string; error?: string }> {
+  const apiKey = process.env.FIRECRAWL_API_KEY;
+
+  if (!apiKey || apiKey === 'your_firecrawl_api_key_here') {
+    return { text: '', error: 'Firecrawl API key not configured' };
+  }
+
+  try {
+    const { Firecrawl } = await import('@mendable/firecrawl-js');
+    const app = new Firecrawl({ apiKey });
+
+    // Determine base URL
+    let baseUrl = company;
+    if (!baseUrl.startsWith('http')) {
+      const slug = company.toLowerCase().replace(/\s+/g, '');
+      baseUrl = `https://www.${slug}.com`;
+    }
+
+    const paths = ['', '/about', '/pricing', '/blog'];
+    const results: string[] = [];
+
+    for (const path of paths) {
+      try {
+        const url = baseUrl + path;
+        // @ts-expect-error - firecrawl types may vary
+        const result = await app.scrapeUrl(url, { formats: ['markdown'] });
+        if (result && result.success && result.markdown) {
+          results.push(`\n\n--- Page: ${url} ---\n${result.markdown}`);
+        }
+      } catch {
+        // Continue with next path
+      }
+    }
+
+    if (results.length === 0) {
+      return { text: '', error: `Could not scrape any pages for ${company}` };
+    }
+
+    return { text: results.join('\n'), error: undefined };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown scraping error';
+    return { text: '', error: message };
+  }
+}
+
+function sendEvent(controller: ReadableStreamDefaultController, message: StreamMessage) {
+  const encoder = new TextEncoder();
+  controller.enqueue(encoder.encode(`data: ${JSON.stringify(message)}\n\n`));
+}
+
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => ({}));
+  const { company } = body;
+
+  if (!company || typeof company !== 'string') {
+    return new Response(JSON.stringify({ error: 'Company name is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const cacheKey = `rivalscan:${company.toLowerCase().trim()}`;
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        // 1. Check cache
+        const cached = await getCached<ResearchReport>(cacheKey);
+        if (cached) {
+          sendEvent(controller, {
+            status: 'done',
+            message: 'Loaded from cache',
+            data: cached,
+          });
+          controller.close();
+          return;
+        }
+
+        // 2. Scrape
+        sendEvent(controller, { status: 'scraping', message: 'Scraping website...' });
+        const { text: scrapedText, error: scrapeError } = await scrapeCompany(company);
+
+        sendEvent(controller, { status: 'reading', message: 'Reading content...' });
+
+        // 3. Prepare content for Claude
+        let contentForClaude: string;
+        if (scrapeError || !scrapedText) {
+          contentForClaude = `Company name: ${company}\n[Note: Web scraping was unavailable. Please rely on your training knowledge and any web search capabilities to analyze this company thoroughly.]`;
+        } else {
+          const chunks = chunkText(scrapedText, 1500);
+          contentForClaude = chunks.slice(0, 8).join('\n\n---CHUNK---\n\n');
+        }
+
+        // 4. Generate with Groq
+        sendEvent(controller, { status: 'generating', message: 'Generating report...' });
+
+        const completion = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'user', content: buildUserPrompt(company, contentForClaude) },
+          ],
+          response_format: { type: 'json_object' },
+        });
+
+        let reportJson = completion.choices[0].message.content || '';
+
+        // Strip markdown fences if present
+        reportJson = reportJson
+          .replace(/^```(?:json)?\n?/m, '')
+          .replace(/\n?```$/m, '')
+          .trim();
+
+        const report: ResearchReport = JSON.parse(reportJson);
+
+        // 6. Cache result
+        await setCache(cacheKey, report, 86400);
+
+        // 7. Send done
+        sendEvent(controller, {
+          status: 'done',
+          message: 'Report generated successfully',
+          data: report,
+          ...(scrapeError
+            ? { error: `Note: Scraping was unavailable (${scrapeError}). Analysis used web knowledge as fallback.` }
+            : {}),
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'An unexpected error occurred';
+        sendEvent(controller, {
+          status: 'error',
+          message: 'Failed to generate report',
+          error: message,
+        });
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    },
+  });
+}
