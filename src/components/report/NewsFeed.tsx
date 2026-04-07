@@ -1,10 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Newspaper, ExternalLink, Calendar, MessageSquare } from 'lucide-react';
+import { Newspaper, ExternalLink, Calendar } from 'lucide-react';
 import { NewsItem } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 interface NewsFeedProps {
   news: NewsItem[];

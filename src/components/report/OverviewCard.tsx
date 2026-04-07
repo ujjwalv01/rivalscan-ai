@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Building2, MapPin, Users, Layers, Tag, TrendingUp } from 'lucide-react';
+import { Building2, MapPin, Users, Layers, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { CompanyOverview } from '@/lib/types';
 

@@ -15,7 +15,6 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OverviewCard } from '@/components/report/OverviewCard';
 import { SwotAnalysis } from '@/components/report/SwotAnalysis';
 import { CompetitorTable } from '@/components/report/CompetitorTable';
@@ -88,7 +87,6 @@ export default function ReportPage() {
   const [statusMessage, setStatusMessage] = useState('');
   const [report, setReport] = useState<ResearchReport | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [warning, setWarning] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const abortRef = useRef<AbortController | null>(null);
 
@@ -97,7 +95,6 @@ export default function ReportPage() {
     setStatusMessage('Initiating scan...');
     setReport(null);
     setError(null);
-    setWarning(null);
 
     abortRef.current?.abort();
     const controller = new AbortController();
@@ -141,9 +138,6 @@ export default function ReportPage() {
               if (msg.data) {
                 setReport(msg.data);
                 setStatus('done');
-              }
-              if (msg.error && msg.status !== 'error') {
-                setWarning(msg.error);
               }
               if (msg.status === 'error') {
                 setError(msg.error || msg.message);
