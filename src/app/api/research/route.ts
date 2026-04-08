@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getCached, setCache } from '@/lib/redis';
 import { ResearchReport, StreamMessage } from '@/lib/types';
-import { groq, buildUserPrompt, chunkText } from '@/lib/groq';
+import { buildUserPrompt, chunkText } from '@/lib/groq';
 
 async function scrapeCompany(company: string): Promise<{ text: string; error?: string }> {
   const apiKey = process.env.FIRECRAWL_API_KEY;
@@ -99,7 +99,8 @@ export async function POST(req: NextRequest) {
         // 4. Generate with Groq
         sendEvent(controller, { status: 'generating', message: 'Generating report...' });
 
-        const completion = await groq.chat.completions.create({
+        const { groq: groqClient } = await import('@/lib/groq');
+        const completion = await groqClient.chat.completions.create({
           model: 'llama-3.3-70b-versatile',
           messages: [
             { role: 'user', content: buildUserPrompt(company, contentForClaude) },
@@ -129,12 +130,18 @@ export async function POST(req: NextRequest) {
             ? { error: `Note: Scraping was unavailable (${scrapeError}). Analysis used web knowledge as fallback.` }
             : {}),
         });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'An unexpected error occurred';
+      } catch (err: any) {
+        const errorMessage = err?.message || 'Unknown error';
+        const isGroqError = errorMessage.toLowerCase().includes('groq') || 
+                           errorMessage.toLowerCase().includes('401') ||
+                           errorMessage.toLowerCase().includes('unauthorized');
+        
         sendEvent(controller, {
           status: 'error',
-          message: 'Failed to generate report',
-          error: message,
+          message: isGroqError ? 'API Configuration Error' : 'Analysis Failed',
+          error: isGroqError 
+            ? `API Key Error: ${errorMessage}. Please check your GROQ_API_KEY in Vercel environment variables.` 
+            : errorMessage,
         });
       } finally {
         controller.close();
