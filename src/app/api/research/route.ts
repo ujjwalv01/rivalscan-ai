@@ -130,8 +130,8 @@ export async function POST(req: NextRequest) {
             ? { error: `Note: Scraping was unavailable (${scrapeError}). Analysis used web knowledge as fallback.` }
             : {}),
         });
-      } catch (err: any) {
-        const errorMessage = err?.message || 'Unknown error';
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         const isGroqError = errorMessage.toLowerCase().includes('groq') || 
                            errorMessage.toLowerCase().includes('401') ||
                            errorMessage.toLowerCase().includes('unauthorized');
