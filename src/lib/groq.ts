@@ -18,6 +18,7 @@ ${chunks}
 
 Return a single JSON object (no markdown, no explanation, no code fences) with exactly this schema:
 {
+  "isValid": "boolean - true if the company is a real, known entity with verifiable business operations, false if it appears to be gibberish, non-existent, or completely unknown",
   "overview": {
     "oneliner": "string - one sharp sentence describing what the company does",
     "positioning": "string - 2-3 sentence paragraph about market positioning",
@@ -60,6 +61,8 @@ Return a single JSON object (no markdown, no explanation, no code fences) with e
     }
   ]
 }
+
+If isValid is false, you should still attempt to fill other fields with "Unknown" or empty arrays/zeros, but the primary indicator of data quality is the isValid flag.
 
 Include exactly 4-5 competitors. Include exactly 5-6 news items. Scores are 1-10.
 CRITICAL: ONLY OUTPUT RAW JSON. DO NOT wrap the output in \`\`\`json\`\`\`. The first character of your response MUST be '{'.`;

@@ -22,20 +22,24 @@ async function scrapeCompany(company: string): Promise<{ text: string; error?: s
     }
 
     const paths = ['', '/about', '/pricing', '/blog'];
-    const results: string[] = [];
-
-    for (const path of paths) {
-      try {
-        const url = baseUrl + path;
-        // @ts-expect-error - firecrawl types may vary
-        const result = await app.scrapeUrl(url, { formats: ['markdown'] });
-        if (result && result.success && result.markdown) {
-          results.push(`\n\n--- Page: ${url} ---\n${result.markdown}`);
+    
+    const scrapeResults = await Promise.all(
+      paths.map(async (path) => {
+        try {
+          const url = baseUrl + path;
+          // @ts-expect-error - firecrawl types may vary
+          const result = await app.scrapeUrl(url, { formats: ['markdown'] });
+          if (result && result.success && result.markdown) {
+            return `\n\n--- Page: ${url} ---\n${result.markdown}`;
+          }
+        } catch {
+          // Ignore individual failures
         }
-      } catch {
-        // Continue with next path
-      }
-    }
+        return null;
+      })
+    );
+
+    const results = scrapeResults.filter((r): r is string => r !== null);
 
     if (results.length === 0) {
       return { text: '', error: `Could not scrape any pages for ${company}` };

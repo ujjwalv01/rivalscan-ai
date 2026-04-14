@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Loader2,
+  Search,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OverviewCard } from '@/components/report/OverviewCard';
@@ -253,7 +254,22 @@ export default function ReportPage() {
             <StatusBar status={status} message={statusMessage} />
           )}
 
-          {report && (
+          {report && !report.isValid && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-20 h-20 rounded-3xl bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center mb-6">
+                <Search className="w-10 h-10 text-neutral-400" />
+              </div>
+              <h2 className="text-3xl font-black mb-3 italic uppercase">Company Not Found</h2>
+              <p className="text-neutral-500 dark:text-neutral-400 mb-8 max-w-sm mx-auto font-medium">
+                We couldn't find verifiable data for "{company}". Please check the spelling or try another company name.
+              </p>
+              <Button onClick={() => router.push('/')} className="gap-3 bg-neutral-950 dark:bg-neutral-50 text-white dark:text-black rounded-2xl h-12 px-8 font-black uppercase tracking-widest shadow-xl">
+                Try Another Search
+              </Button>
+            </motion.div>
+          )}
+
+          {report && report.isValid && (
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, type: 'spring' }} className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10 items-start">
               
               <SidebarNav activeTab={activeTab} onTabChange={setActiveTab} />

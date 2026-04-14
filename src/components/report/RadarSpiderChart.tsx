@@ -49,13 +49,16 @@ export function RadarSpiderChart({ scores, company }: RadarSpiderChartProps) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
-      className="print-section"
+      className="print-section relative"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+      {/* Background glow for premium feel */}
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 w-64 h-64 bg-indigo-500/5 dark:bg-indigo-500/10 blur-[80px] pointer-events-none rounded-full hidden lg:block" />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-white/40 dark:bg-neutral-900/40 backdrop-blur-sm p-6 sm:p-8 rounded-[32px] border border-neutral-100 dark:border-neutral-800/50">
         {/* Chart */}
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart data={data}>
+            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
               <PolarGrid
                 stroke="currentColor"
                 className="text-neutral-200 dark:text-neutral-700"
@@ -63,8 +66,8 @@ export function RadarSpiderChart({ scores, company }: RadarSpiderChartProps) {
               />
               <PolarAngleAxis
                 dataKey="axis"
-                tick={{ fontSize: 12, fill: 'currentColor', className: 'text-neutral-500 dark:text-neutral-400' }}
-                className="text-neutral-500 dark:text-neutral-400"
+                tick={{ fontSize: 10, fill: 'currentColor', className: 'hidden sm:block text-neutral-500 dark:text-neutral-400' }}
+                className="hidden sm:block text-neutral-500 dark:text-neutral-400"
               />
               <PolarRadiusAxis
                 angle={90}
@@ -116,7 +119,7 @@ export function RadarSpiderChart({ scores, company }: RadarSpiderChartProps) {
                 transition={{ delay: i * 0.07 }}
                 className="flex items-center gap-3"
               >
-                <span className="text-sm text-neutral-600 dark:text-neutral-400 w-28 flex-shrink-0">
+                <span className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 w-24 sm:w-28 flex-shrink-0">
                   {AXIS_LABELS[key]}
                 </span>
                 <div className="flex-1 h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">

@@ -43,6 +43,7 @@ export interface NewsItem {
 }
 
 export interface ResearchReport {
+  isValid: boolean;
   overview: CompanyOverview;
   swot: SwotAnalysis;
   competitors: Competitor[];

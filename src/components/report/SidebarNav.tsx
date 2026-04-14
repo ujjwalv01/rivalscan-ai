@@ -23,14 +23,14 @@ const TABS: TabItem[] = [
 
 export function SidebarNav({ activeTab, onTabChange }: SidebarNavProps) {
   return (
-    <nav className="flex flex-col gap-2 p-3 bg-neutral-100/50 dark:bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-neutral-200 dark:border-neutral-800 h-fit sticky top-24 no-print">
+    <nav className="flex flex-row lg:flex-col gap-2 p-2 bg-neutral-100/50 dark:bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-neutral-200 dark:border-neutral-800 h-fit sticky top-4 lg:top-24 no-print overflow-x-auto lg:overflow-x-visible scrollbar-hide z-30 shadow-sm">
       {TABS.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className="group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300"
+            className="group relative flex items-center gap-2.5 px-4 py-2.5 lg:py-3 rounded-xl transition-all duration-300 whitespace-nowrap"
           >
             {isActive && (
               <motion.div
@@ -46,7 +46,7 @@ export function SidebarNav({ activeTab, onTabChange }: SidebarNavProps) {
               }`}
             />
             <span
-              className={`text-sm font-black uppercase tracking-widest transition-colors duration-300 ${
+              className={`text-xs lg:text-sm font-black uppercase tracking-widest transition-colors duration-300 ${
                 isActive ? 'text-white dark:text-black' : 'text-neutral-500'
               }`}
             >

@@ -141,7 +141,7 @@ export default function HomePage() {
                   : 'shadow-2xl shadow-neutral-200/30 dark:shadow-neutral-950/50'
               }`}
             >
-              <Search className="absolute left-6 w-5 h-5 text-neutral-500 dark:text-neutral-400 pointer-events-none" />
+              <Search className="absolute left-5 sm:left-6 w-5 h-5 text-neutral-500 dark:text-neutral-400 pointer-events-none z-10" />
               <AnimatePresence mode="wait">
                 <Input
                   ref={inputRef}
@@ -153,17 +153,17 @@ export default function HomePage() {
                   onBlur={() => setFocused(false)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch(query)}
                   placeholder={`Try ${EXAMPLE_COMPANIES[placeholderIndex]}...`}
-                  className="h-20 pl-16 pr-44 text-xl rounded-[32px] border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
+                  className="h-14 sm:h-20 pl-12 sm:pl-16 pr-16 sm:pr-44 text-base sm:text-xl rounded-[32px] border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
                 />
               </AnimatePresence>
               <Button
                 id="analyze-button"
                 onClick={() => handleSearch(query)}
                 disabled={!query.trim()}
-                className="absolute right-2.5 h-15 px-8 rounded-[24px] bg-neutral-950 dark:bg-neutral-50 text-white dark:text-black font-black uppercase tracking-widest gap-2 transition-all hover:opacity-90 active:scale-95 disabled:opacity-30"
+                className="absolute right-1.5 sm:right-2.5 h-11 sm:h-16 px-4 sm:px-8 rounded-[24px] bg-neutral-950 dark:bg-neutral-50 text-white dark:text-black font-black uppercase tracking-widest gap-2 transition-all hover:opacity-90 active:scale-95 disabled:opacity-30"
               >
-                Analyze
-                <ArrowRight className="w-4 h-4" />
+                <span className="hidden sm:inline">Analyze</span>
+                <ArrowRight className="w-5 h-5 sm:w-4 sm:h-4" />
               </Button>
             </div>
 

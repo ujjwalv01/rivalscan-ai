@@ -35,24 +35,24 @@ export function OverviewCard({ overview }: OverviewCardProps) {
       </motion.div>
 
       {/* Meta grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {meta.map((item, i) => (
           <motion.div
             key={item.label}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.1, duration: 0.4 }}
-            className="group p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-900 dark:hover:border-neutral-100 transition-all duration-300"
+            className="group p-4 sm:p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-900 dark:hover:border-neutral-100 transition-all duration-300 min-w-0"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100">
-                <item.icon className="w-4 h-4" />
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div className="p-1.5 sm:p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shrink-0">
+                <item.icon className="w-3.5 h-3.5 sm:w-4 h-4" />
               </div>
-              <span className="text-[10px] font-black text-neutral-500 dark:text-neutral-500 uppercase tracking-[0.2em]">
+              <span className="text-[9px] sm:text-[10px] font-black text-neutral-500 dark:text-neutral-500 uppercase tracking-tight sm:tracking-[0.2em] truncate">
                 {item.label}
               </span>
             </div>
-            <p className="font-black text-neutral-900 dark:text-neutral-50 text-xl truncate">
+            <p className="font-black text-neutral-900 dark:text-neutral-50 text-lg sm:text-xl break-words line-clamp-2">
               {item.value || 'Unknown'}
             </p>
           </motion.div>
