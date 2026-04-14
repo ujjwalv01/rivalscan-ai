@@ -7,7 +7,7 @@ RivalScan scrapes a company's public web presence, feeds it through Groq, and re
 ## ✨ Features
 
 - 🌐 **Web Scraping** via Firecrawl (homepage, /about, /pricing, /blog)
-- 🤖 **AI Analysis** via Anthropic Claude (structured JSON output)
+- 🤖 **AI Analysis** via Groq AI (structured JSON output)
 - 📊 **SWOT Analysis** with animated 2×2 grid
 - 🏆 **Competitor Comparison** table
 - 📡 **Radar/Spider Chart** (Recharts) scoring 6 axes
