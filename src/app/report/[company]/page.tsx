@@ -261,7 +261,7 @@ export default function ReportPage() {
               </div>
               <h2 className="text-3xl font-black mb-3 italic uppercase">Company Not Found</h2>
               <p className="text-neutral-500 dark:text-neutral-400 mb-8 max-w-sm mx-auto font-medium">
-                We couldn't find verifiable data for "{company}". Please check the spelling or try another company name.
+                We couldn&apos;t find verifiable data for &quot;{company}&quot;. Please check the spelling or try another company name.
               </p>
               <Button onClick={() => router.push('/')} className="gap-3 bg-neutral-950 dark:bg-neutral-50 text-white dark:text-black rounded-2xl h-12 px-8 font-black uppercase tracking-widest shadow-xl">
                 Try Another Search
